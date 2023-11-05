@@ -17,6 +17,8 @@ namespace knjiznica
         private knjiznica nasaknjiznica = new knjiznica();
         private string selknjpos;
         private string selclanpos;
+        private string selknj2pos;
+
         private bool ch;
         public class knjiznica
         {
@@ -117,6 +119,11 @@ namespace knjiznica
                 posudene_knjige.Add(x);
             }
 
+            public void remove_knjiga(Knjiga x)
+            {
+                posudene_knjige.Remove(x);
+            }
+
             public Knjiga get_knjiga(int x)
             {
                 return posudene_knjige[x];
@@ -153,7 +160,7 @@ namespace knjiznica
 
             knjigezaposudbu();
             clanovizaposudbu();
-
+            posudeneknjigecombobox();
 
 
 
@@ -182,6 +189,7 @@ namespace knjiznica
             nasaknjiznica.knjigeadd(x);
             dataGridView1.Rows.Add(x.get_ID(), x.get_ime(), x.get_autorime() + " " + x.get_autorprezime());
             knjigezaposudbu();
+            posudeneknjigecombobox();
         }
 
 
@@ -193,6 +201,18 @@ namespace knjiznica
                 if (kji.get_clanposudio() == 0)
                 {
                     comboBox1.Items.Add(kji.get_ID());
+                }
+            }
+        }
+
+        private void posudeneknjigecombobox()
+        {
+            comboBox4.Items.Clear();
+            foreach (Knjiga kji in nasaknjiznica.knjige)
+            {
+                if (kji.get_clanposudio() != 0)
+                {
+                    comboBox4.Items.Add(kji.get_ID());
                 }
             }
         }
@@ -216,11 +236,19 @@ namespace knjiznica
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if (textBox4.Text != "" && textBox1.Text != "") 
+            {
             string s2 = textBox4.Text;
             string s3 = textBox1.Text;
             Clan ncl = new Clan(s2,s3);
+            clantableadd(ncl);
+            textBox1.Clear();
+            textBox4.Clear();
 
-           clantableadd(ncl);
+            }
+
+
+
         }
 
 
@@ -317,18 +345,37 @@ namespace knjiznica
 
         private void button3_Click(object sender, EventArgs e)
         {
+            if ((comboBox2.SelectedItem != null) && (comboBox1.SelectedItem != null)) 
+            { 
             selclanpos = comboBox2.SelectedItem.ToString();
             selknjpos = comboBox1.SelectedItem.ToString();
             nasaknjiznica.knjige.ElementAt(Int32.Parse(selknjpos)-1).set_clanposudio(Int32.Parse(selclanpos));
             nasaknjiznica.clanovi.ElementAt(Int32.Parse(selclanpos)-1).add_knjiga(nasaknjiznica.knjige[Int32.Parse(selknjpos) - 1]);
             knjigezaposudbu();
+            posudeneknjigecombobox();
             comboBox1.ResetText();
             comboBox2.ResetText();
             listBox1.Items.Clear();
-
+            }
+          
         }
 
-       
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (comboBox4.SelectedItem != null) 
+            {
+            selknj2pos = comboBox4.SelectedItem.ToString();
+            nasaknjiznica.knjige.ElementAt(Int32.Parse(selknj2pos) - 1).set_clanposudio(0);
+                nasaknjiznica.clanovi.ElementAt(Int32.Parse(selclanpos) - 1).remove_knjiga(nasaknjiznica.knjige[Int32.Parse(selknj2pos) - 1]);
+            knjigezaposudbu();
+            posudeneknjigecombobox();
+            comboBox4.ResetText();
+            listBox1.Items.Clear();
+            }
+            
+        }
+
+
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -369,5 +416,17 @@ namespace knjiznica
         {
 
         }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
     }
 }
