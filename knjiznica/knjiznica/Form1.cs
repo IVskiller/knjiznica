@@ -17,6 +17,7 @@ namespace knjiznica
         private knjiznica nasaknjiznica = new knjiznica();
         private string selknjpos;
         private string selclanpos;
+        private bool ch;
         public class knjiznica
         {
             public List<Clan> clanovi = new List<Clan>();
@@ -87,6 +88,7 @@ namespace knjiznica
             static int IDbrojac=1;
             protected string ime;
             protected string prezime;
+            protected List<Knjiga> posudene_knjige= new List<Knjiga>();
             public Clan(string ime_, string prezime_)
             {
                 OIB = IDbrojac;
@@ -111,14 +113,44 @@ namespace knjiznica
                 return prezime.ToString();
             }
 
+            public void add_knjiga(Knjiga x) {
+                posudene_knjige.Add(x);
+            }
+
+            public Knjiga get_knjiga(int x)
+            {
+                return posudene_knjige[x];
+            }
+
+            public int knjige_count()
+            {
+                return posudene_knjige.Count();
+            }
+            public Knjiga knjige_list(int x) {
+                return posudene_knjige[x];
+            }
+
         }
         public Form1()
         {
             InitializeComponent();
-            Knjiga knj1 = new Knjiga("hlapić","ivana","brlić");
+            ch = false;
+            Knjiga knj1 = new Knjiga("hlapić","Ivana","Brlić");
+            Knjiga knj2 = new Knjiga("hlapić", "Ivana", "Brlić");
+            Knjiga knj3 = new Knjiga("preobrazba", "Franc", "Kafka");
+
+
             knjigatableadd(knj1);
+            knjigatableadd(knj2);
+            knjigatableadd(knj3);
+
+
             Clan cl1 = new Clan("Jan", "Kovać");
             clantableadd(cl1);
+
+            Clan cl2 = new Clan("Karlo", "Preloznjak");
+            clantableadd(cl2);
+
             knjigezaposudbu();
             clanovizaposudbu();
 
@@ -130,7 +162,8 @@ namespace knjiznica
         #region knjiga add
         private void button1_Click(object sender, EventArgs e)
         {
-           
+            for (int i = 0; i < numericUpDown1.Value; i++) 
+            {
             string s2= textBox2.Text;
             string s3 = textBox3.Text;
             try
@@ -139,7 +172,8 @@ namespace knjiznica
 
                 knjigatableadd(nk);
             }
-            catch { }
+            catch { } }
+            
             
            
         }
@@ -203,9 +237,6 @@ namespace knjiznica
         #endregion
 
 
-
-
-
         #region prazno
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
@@ -225,7 +256,7 @@ namespace knjiznica
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            //listBox1.Items.Add();
+         
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
@@ -240,8 +271,32 @@ namespace knjiznica
         
         private void listBox1_SelectedIndexChanged_1(object sender, EventArgs e)
         {
+                if (ch && listBox1.SelectedIndex!=-1 && listBox1.SelectedItem.ToString()!= "posudio : slobodna")
+                {
+                
 
-        }
+
+                    string a = listBox1.SelectedItem.ToString();
+                    string b = a.Substring(a.Length - 1);
+
+
+                    listBox1.Items.Clear();
+
+
+                    int brojknj = nasaknjiznica.clanovi[Int32.Parse(b) - 1].knjige_count();
+                    for (int i = 0; i < brojknj; i++)
+                    {
+                        Knjiga posudio = nasaknjiznica.clanovi[Int32.Parse(b) - 1].get_knjiga(i);
+                        string knjigaid = posudio.get_ID();
+                        listBox1.Items.Add(knjigaid);
+                    }
+                    ch = false;
+                    listBox1.SelectedIndex = -1;
+                }
+               
+
+            }
+        
         private void label1_Click(object sender, EventArgs e)
         {
 
@@ -265,15 +320,54 @@ namespace knjiznica
             selclanpos = comboBox2.SelectedItem.ToString();
             selknjpos = comboBox1.SelectedItem.ToString();
             nasaknjiznica.knjige.ElementAt(Int32.Parse(selknjpos)-1).set_clanposudio(Int32.Parse(selclanpos));
+            nasaknjiznica.clanovi.ElementAt(Int32.Parse(selclanpos)-1).add_knjiga(nasaknjiznica.knjige[Int32.Parse(selknjpos) - 1]);
             knjigezaposudbu();
             comboBox1.ResetText();
             comboBox2.ResetText();
+            listBox1.Items.Clear();
 
         }
 
-        private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
+       
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            listBox1.Items.Add(dataGridView1.SelectedCells[0].RowIndex);
+            
+                listBox1.Items.Clear();
+                DataGridViewRow row = dataGridView1.CurrentCell.OwningRow;
+            string value = "";
+           
+            value = row.Cells["ID"].Value.ToString();
+          
+            int posudio = nasaknjiznica.knjige[Int32.Parse(value) - 1].get_clanposudio();
+                if (posudio != 0) listBox1.Items.Add("posudio : ID-" + posudio);
+                else listBox1.Items.Add("posudio : slobodna");
+            ch = true;
+
+        }
+
+        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            listBox1.Items.Clear();
+            DataGridViewRow row = dataGridView2.CurrentCell.OwningRow;
+            string value = "";
+
+            value = row.Cells["IDk"].Value.ToString();
+            int brojknj = nasaknjiznica.clanovi[Int32.Parse(value)-1].knjige_count();
+            for (int i = 0; i < brojknj; i++) { 
+                Knjiga posudio = nasaknjiznica.clanovi[Int32.Parse(value) - 1].get_knjiga(i);
+                string knjigaid = posudio.get_ID();
+                listBox1.Items.Add(knjigaid);
+            }
+
+          
+           
+
+        }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
