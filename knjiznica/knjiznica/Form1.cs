@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SqlClient;
+
 
 namespace knjiznica
 {
@@ -18,6 +20,7 @@ namespace knjiznica
         private string selknjpos;
         private string selclanpos;
         private string selknj2pos;
+        private int IDposudba;
 
         private bool ch;
         public class knjiznica
@@ -45,6 +48,10 @@ namespace knjiznica
             protected string autorprezime;
             protected int clanposudio;
 
+            public string get_IDbrojac()
+            {
+                return IDbrojac.ToString();
+            }
             public string get_ID()
             {
                 return ID.ToString();
@@ -81,6 +88,17 @@ namespace knjiznica
                 IDbrojac++;
                 clanposudio = 0;
             }
+
+            public Knjiga(string ime_, string autorime_, string autorprezime_, int clanposudio_)
+            {
+                ID = IDbrojac;
+                ime = ime_;
+                autorime = autorime_;
+                autorprezime = autorprezime_;
+                IDbrojac++;
+                clanposudio = clanposudio_;
+            }
+
         }
 
 
@@ -140,45 +158,126 @@ namespace knjiznica
         }
         public Form1()
         {
+
             InitializeComponent();
+
+            string connetionString;
+            SqlConnection cnn;
+            connetionString = @"Server=localhost\SQLEXPRESS;Database=knjiznica;Trusted_Connection=True;User Id=Ivort;Password=sqlknjiznica";
+    
+            cnn = new SqlConnection(connetionString);
+            cnn.Open();
+            SqlCommand inic;
+            SqlDataReader dataReader;
+            String sql, Output="";
+
+            
+            sql = "SELECT *FROM[dbo].[Knjiga]";
+            inic = new SqlCommand(sql, cnn);
+            dataReader = inic.ExecuteReader();
+            while (dataReader.Read()) {
+               
+                Knjiga knj1 = new Knjiga(dataReader.GetValue(1).ToString(), dataReader.GetValue(2).ToString(), dataReader.GetValue(3).ToString(), Int32.Parse(dataReader.GetValue(4).ToString()));
+
+                knjigatableadd(knj1);
+            }
+            dataReader.Close();
+            inic.Dispose();
+            cnn.Close();
+
+           
+            
+            cnn.Open();
+            sql = "SELECT *FROM[dbo].[Clan]";
+            inic = new SqlCommand(sql, cnn);
+            dataReader = inic.ExecuteReader();
+            while (dataReader.Read())
+            {
+                
+                Clan cl1 = new Clan(dataReader.GetValue(1).ToString(), dataReader.GetValue(2).ToString());
+                clantableadd(cl1);
+            }
+            dataReader.Close();
+            inic.Dispose();
+            cnn.Close();
+
+
+
+            cnn.Open();
+            sql = "SELECT *FROM[dbo].[Posudbe]";
+            inic = new SqlCommand(sql, cnn);
+            dataReader = inic.ExecuteReader();
+            while (dataReader.Read())
+            {
+                nasaknjiznica.clanovi.ElementAt(Int32.Parse(dataReader.GetValue(1).ToString()) - 1).add_knjiga(nasaknjiznica.knjige[Int32.Parse(dataReader.GetValue(2).ToString()) - 1]);
+
+
+
+
+
+
+                int a = Int32.Parse(dataReader.GetValue(0).ToString());
+                if (IDposudba < a) { IDposudba = a; }
+            }
+            IDposudba++;
+            dataReader.Close();
+            inic.Dispose();
+            cnn.Close();
+
+
+
+
+
+
+
+
             ch = false;
-            Knjiga knj1 = new Knjiga("hlapić","Ivana","Brlić");
-            Knjiga knj2 = new Knjiga("hlapić", "Ivana", "Brlić");
-            Knjiga knj3 = new Knjiga("preobrazba", "Franc", "Kafka");
-
-
-            knjigatableadd(knj1);
-            knjigatableadd(knj2);
-            knjigatableadd(knj3);
-
-
-            Clan cl1 = new Clan("Jan", "Kovać");
-            clantableadd(cl1);
-
-            Clan cl2 = new Clan("Karlo", "Preloznjak");
-            clantableadd(cl2);
+            
 
             knjigezaposudbu();
             clanovizaposudbu();
             posudeneknjigecombobox();
-
-
 
         }
 
         #region knjiga add
         private void button1_Click(object sender, EventArgs e)
         {
+
             for (int i = 0; i < numericUpDown1.Value; i++) 
             {
             string s2= textBox2.Text;
             string s3 = textBox3.Text;
             try
             {
-                Knjiga nk = new Knjiga(s2, s3.Substring(0, s3.IndexOf(" ")), s3.Substring(s3.IndexOf(" ")));
-
+                String ime = s3.Substring(0, s3.IndexOf(" "));
+                String prezime = s3.Substring(s3.IndexOf(" "));
+                Knjiga nk = new Knjiga(s2, ime, prezime);
                 knjigatableadd(nk);
-            }
+
+                    string connetionString;
+                    SqlConnection cnn;
+                    connetionString = @"Server=localhost\SQLEXPRESS;Database=knjiznica;Trusted_Connection=True;User Id=Ivort;Password=sqlknjiznica";
+
+                    using (cnn = new SqlConnection(connetionString))
+                    {
+                        cnn.Open();
+
+                        string sql = "INSERT INTO [dbo].[Knjiga] ([ID], [Naziv], [Imeautora], [Prezimeautora]) " +
+                                     "VALUES (@ID, @Naziv, @Imeautora, @Prezimeautora)";
+
+                        using (SqlCommand command = new SqlCommand(sql, cnn))
+                        {
+                            command.Parameters.AddWithValue("@ID", nasaknjiznica.knjige[nasaknjiznica.knjige.Count - 1].get_ID());
+                            command.Parameters.AddWithValue("@Naziv", nasaknjiznica.knjige[nasaknjiznica.knjige.Count - 1].get_ime());
+                            command.Parameters.AddWithValue("@Imeautora", nasaknjiznica.knjige[nasaknjiznica.knjige.Count - 1].get_autorime());
+                            command.Parameters.AddWithValue("@Prezimeautora", nasaknjiznica.knjige[nasaknjiznica.knjige.Count - 1].get_autorprezime());
+
+                            command.ExecuteNonQuery();
+                            Console.WriteLine("Data Inserted Successfully!");
+                        }
+                    }
+                }
             catch { } }
             
             
@@ -245,6 +344,29 @@ namespace knjiznica
             textBox1.Clear();
             textBox4.Clear();
 
+                string connetionString;
+                SqlConnection cnn;
+                connetionString = @"Server=localhost\SQLEXPRESS;Database=knjiznica;Trusted_Connection=True;User Id=Ivort;Password=sqlknjiznica";
+
+                using (cnn = new SqlConnection(connetionString))
+                {
+                    cnn.Open();
+
+                    string sql = "INSERT INTO [dbo].[Clan]([OIB],[Ime],[Prezime]) " +
+                                 "VALUES (@OIB, @Ime, @Prezime)";
+
+                    using (SqlCommand command = new SqlCommand(sql, cnn))
+                    {
+                        command.Parameters.AddWithValue("@OIB", nasaknjiznica.clanovi[nasaknjiznica.clanovi.Count-1].get_OIB());
+                        command.Parameters.AddWithValue("@Ime", nasaknjiznica.clanovi[nasaknjiznica.clanovi.Count - 1].get_ime());
+                        command.Parameters.AddWithValue("@Prezime", nasaknjiznica.clanovi[nasaknjiznica.clanovi.Count - 1].get_prezime());
+
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Data Inserted Successfully!");
+                    }
+                }
+
+
             }
 
 
@@ -264,38 +386,6 @@ namespace knjiznica
         }
         #endregion
 
-
-        #region prazno
-        private void textBox4_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-         
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox3_TextChanged(object sender, EventArgs e)
-        {
-
-        } 
         
         private void listBox1_SelectedIndexChanged_1(object sender, EventArgs e)
         {
@@ -325,23 +415,7 @@ namespace knjiznica
 
             }
         
-        private void label1_Click(object sender, EventArgs e)
-        {
 
-        }
-  private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            
-
-
-        }
-
-        #endregion
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -356,6 +430,49 @@ namespace knjiznica
             comboBox1.ResetText();
             comboBox2.ResetText();
             listBox1.Items.Clear();
+
+                string connetionString;
+                SqlConnection cnn;
+                connetionString = @"Server=localhost\SQLEXPRESS;Database=knjiznica;Trusted_Connection=True;User Id=Ivort;Password=sqlknjiznica";
+
+
+                using (cnn = new SqlConnection(connetionString))
+                {
+                    cnn.Open();
+
+                    string sql = "INSERT INTO [dbo].[Posudbe]([ID],[IDclana],[IDknjige]) " +
+                                 "VALUES (@ID, @Clan, @Knjiga)";
+
+                    using (SqlCommand command = new SqlCommand(sql, cnn))
+                    {
+                        command.Parameters.AddWithValue("@ID", IDposudba);
+                        IDposudba++;
+                        command.Parameters.AddWithValue("@Clan", nasaknjiznica.clanovi.ElementAt(Int32.Parse(selclanpos) - 1).get_OIB());
+                        command.Parameters.AddWithValue("@Knjiga", nasaknjiznica.knjige.ElementAt(Int32.Parse(selknjpos) - 1).get_ID());
+
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Data Inserted Successfully!");
+                    }
+                }
+
+
+                using (cnn = new SqlConnection(connetionString))
+                {
+                    cnn.Open();
+
+                    string sql = "UPDATE [dbo].[Knjiga] SET Posuđena = " + nasaknjiznica.clanovi.ElementAt(Int32.Parse(selclanpos) - 1).get_OIB() + " WHERE ID =" + nasaknjiznica.knjige.ElementAt(Int32.Parse(selknjpos) - 1).get_ID() + ";";
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    using (SqlCommand command = new SqlCommand(sql, cnn))
+                    {
+                        
+                        adapter.UpdateCommand = new SqlCommand(sql, cnn);
+                        adapter.UpdateCommand.ExecuteNonQuery();
+                       
+                    }
+                }
+
+
+
             }
           
         }
@@ -365,14 +482,59 @@ namespace knjiznica
             if (comboBox4.SelectedItem != null) 
             {
             selknj2pos = comboBox4.SelectedItem.ToString();
-            nasaknjiznica.knjige.ElementAt(Int32.Parse(selknj2pos) - 1).set_clanposudio(0);
-                nasaknjiznica.clanovi.ElementAt(Int32.Parse(selclanpos) - 1).remove_knjiga(nasaknjiznica.knjige[Int32.Parse(selknj2pos) - 1]);
+                int a = nasaknjiznica.knjige.ElementAt(Int32.Parse(selknj2pos) - 1).get_clanposudio();
+
+             nasaknjiznica.clanovi.ElementAt(a-1).remove_knjiga(nasaknjiznica.knjige[Int32.Parse(selknj2pos) - 1]);
+             nasaknjiznica.knjige.ElementAt(Int32.Parse(selknj2pos) - 1).set_clanposudio(0);
+            
             knjigezaposudbu();
             posudeneknjigecombobox();
             comboBox4.ResetText();
             listBox1.Items.Clear();
             }
-            
+
+            string connetionString;
+            SqlConnection cnn;
+            connetionString = @"Server=localhost\SQLEXPRESS;Database=knjiznica;Trusted_Connection=True;User Id=Ivort;Password=sqlknjiznica";
+
+
+
+            using (cnn = new SqlConnection(connetionString))
+            {
+                cnn.Open();
+
+                string sql = "DELETE FROM [dbo].[Posudbe]  WHERE IDknjige=" + nasaknjiznica.knjige.ElementAt(Int32.Parse(selknj2pos) - 1).get_ID() + ";";
+                SqlDataAdapter adapter = new SqlDataAdapter();
+                using (SqlCommand command = new SqlCommand(sql, cnn))
+                {
+
+                    adapter.DeleteCommand = new SqlCommand(sql, cnn);
+                    adapter.DeleteCommand.ExecuteNonQuery();
+
+                }
+            }
+
+
+            using (cnn = new SqlConnection(connetionString))
+            {
+                cnn.Open();
+
+                string sql = "UPDATE [dbo].[Knjiga] SET Posuđena = 0 WHERE ID= " + nasaknjiznica.knjige.ElementAt(Int32.Parse(selknj2pos) - 1).get_ID() + ";";
+                SqlDataAdapter adapter = new SqlDataAdapter();
+                using (SqlCommand command = new SqlCommand(sql, cnn))
+                {
+
+                    adapter.UpdateCommand = new SqlCommand(sql, cnn);
+                    adapter.UpdateCommand.ExecuteNonQuery();
+
+                }
+            }
+
+
+
+
+
+
         }
 
 
@@ -406,27 +568,6 @@ namespace knjiznica
                 string knjigaid = posudio.get_ID();
                 listBox1.Items.Add(knjigaid);
             }
-
-          
-           
-
         }
-
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label6_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
     }
 }

@@ -14,3 +14,10 @@ C:\Users\Ivor\source\repos\knjiznica\knjiznica\obj\Debug\netcoreapp3.1\knjiznica
 C:\Users\Ivor\source\repos\knjiznica\knjiznica\obj\Debug\netcoreapp3.1\knjiznica.dll
 C:\Users\Ivor\source\repos\knjiznica\knjiznica\obj\Debug\netcoreapp3.1\knjiznica.pdb
 C:\Users\Ivor\source\repos\knjiznica\knjiznica\obj\Debug\netcoreapp3.1\knjiznica.genruntimeconfig.cache
+C:\Users\Ivor\source\repos\knjiznica\knjiznica\bin\Debug\netcoreapp3.1\System.Data.SqlClient.dll
+C:\Users\Ivor\source\repos\knjiznica\knjiznica\bin\Debug\netcoreapp3.1\runtimes\win-arm64\native\sni.dll
+C:\Users\Ivor\source\repos\knjiznica\knjiznica\bin\Debug\netcoreapp3.1\runtimes\win-x64\native\sni.dll
+C:\Users\Ivor\source\repos\knjiznica\knjiznica\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\sni.dll
+C:\Users\Ivor\source\repos\knjiznica\knjiznica\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\Ivor\source\repos\knjiznica\knjiznica\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\Ivor\source\repos\knjiznica\knjiznica\obj\Debug\netcoreapp3.1\knjiznica.csproj.CopyComplete

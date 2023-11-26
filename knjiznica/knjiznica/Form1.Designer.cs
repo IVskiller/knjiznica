@@ -90,7 +90,6 @@ namespace knjiznica
             this.dataGridView1.Size = new System.Drawing.Size(543, 148);
             this.dataGridView1.TabIndex = 2;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
             // id
             // 
@@ -121,7 +120,6 @@ namespace knjiznica
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(236, 23);
             this.textBox2.TabIndex = 4;
-            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // textBox3
             // 
@@ -130,7 +128,6 @@ namespace knjiznica
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(152, 23);
             this.textBox3.TabIndex = 5;
-            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // dataGridView2
             // 
@@ -177,7 +174,6 @@ namespace knjiznica
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(150, 23);
             this.textBox1.TabIndex = 9;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // textBox4
             // 
@@ -186,7 +182,6 @@ namespace knjiznica
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(146, 23);
             this.textBox4.TabIndex = 8;
-            this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // button2
             // 
@@ -217,7 +212,6 @@ namespace knjiznica
             this.label1.Size = new System.Drawing.Size(53, 15);
             this.label1.TabIndex = 11;
             this.label1.Text = "posudba";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // comboBox1
             // 
@@ -227,7 +221,6 @@ namespace knjiznica
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(81, 23);
             this.comboBox1.TabIndex = 12;
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // comboBox2
             // 
@@ -237,7 +230,6 @@ namespace knjiznica
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(81, 23);
             this.comboBox2.TabIndex = 13;
-            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // button3
             // 
@@ -278,7 +270,6 @@ namespace knjiznica
             0,
             0,
             0});
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
             // 
             // label5
             // 
@@ -307,7 +298,6 @@ namespace knjiznica
             this.comboBox4.Name = "comboBox4";
             this.comboBox4.Size = new System.Drawing.Size(81, 23);
             this.comboBox4.TabIndex = 19;
-            this.comboBox4.SelectedIndexChanged += new System.EventHandler(this.comboBox4_SelectedIndexChanged);
             // 
             // label6
             // 
@@ -318,7 +308,6 @@ namespace knjiznica
             this.label6.Size = new System.Drawing.Size(51, 15);
             this.label6.TabIndex = 18;
             this.label6.Text = "vračanje";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // panel1
             // 
